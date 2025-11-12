@@ -1,8 +1,8 @@
-# Data Pipeline Streaming
+# 📊 Data Pipeline Streaming
 
 Pipeline de données de bout-en-bout illustrant la génération, l'ingestion, la transformation et la visualisation de transactions financières synthétiques.
 
-> 📖 **Nouveau !** Consultez [PRESENTATION.md](PRESENTATION.md) pour une présentation complète du projet, de ses objectifs et des technologies utilisées.
+> 📖 **📊 Présentation complète :** Consultez [PRESENTATION.md](PRESENTATION.md) pour une présentation détaillée du projet, ses objectifs, cas d'usage et technologies utilisées.
 
 ## 🚀 Démarrage Rapide
 
