@@ -133,12 +133,12 @@ Voir [GUIDE-ANALYSE-NOUVELLE-BD.md](GUIDE-ANALYSE-NOUVELLE-BD.md) pour plus de d
 
 ## 📚 Documentation
 
+- [PRESENTATION.md](PRESENTATION.md) - Présentation complète du projet
 - [QUICKSTART.md](QUICKSTART.md) - Démarrage rapide
 - [GUIDE-ANALYSE-NOUVELLE-BD.md](GUIDE-ANALYSE-NOUVELLE-BD.md) - Guide pour analyser une nouvelle base de données
 - [AMELIORATIONS-PROJET.md](AMELIORATIONS-PROJET.md) - Améliorations du projet
 - [DEPLOY.md](DEPLOY.md) - Guide de déploiement
 - [GITHUB-DEPLOY.md](GITHUB-DEPLOY.md) - Guide complet GitHub et Streamlit Cloud
-- [README-CLOUD.md](README-CLOUD.md) - Déploiement cloud
 - [START-HERE.md](START-HERE.md) - Guide de démarrage détaillé
 
 ## 📄 Licence
