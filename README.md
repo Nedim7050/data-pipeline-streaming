@@ -46,15 +46,19 @@ streamlit run analytics/streamlit_dashboard.py
 
 ### Déployer sur Streamlit Cloud
 
-1. **Pousser le projet sur GitHub**
-2. **Aller sur [Streamlit Cloud](https://streamlit.io/cloud)**
-3. **Connecter votre repository GitHub**
-4. **Configurer le déploiement:**
-   - **Main file:** `streamlit_app.py` (recommandé) ou `dashboard_working.py`
-   - **Python version:** `3.11`
-5. **Déployer!**
+✅ **Votre projet est déjà sur GitHub:** https://github.com/Nedim7050/data-pipeline-streaming
 
-Voir [DEPLOY.md](DEPLOY.md) pour plus de détails.
+1. **Aller sur [Streamlit Cloud](https://streamlit.io/cloud)**
+2. **Se connecter avec GitHub**
+3. **Cliquer sur "New app"**
+4. **Configurer le déploiement:**
+   - **Repository:** `Nedim7050/data-pipeline-streaming`
+   - **Branch:** `main`
+   - **Main file:** `streamlit_app.py` (recommandé)
+   - **Python version:** `3.11`
+5. **Cliquer sur "Deploy!"**
+
+Voir [STREAMLIT-CLOUD-DEPLOY.md](STREAMLIT-CLOUD-DEPLOY.md) ou [DEPLOY.md](DEPLOY.md) pour plus de détails.
 
 ### Déployer sur GitHub
 
