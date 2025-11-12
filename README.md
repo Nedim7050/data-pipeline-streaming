@@ -119,9 +119,21 @@ SQLITE_DB_PATH=data/transactions.db
 - ✅ Visualisation Streamlit avec graphiques et métriques
 - ✅ Export CSV pour PowerBI/Tableau
 
+## 📊 Analyser une Nouvelle Base de Données
+
+Pour créer et analyser une nouvelle base de données:
+
+1. **Dans Streamlit Cloud:** Utilisez les boutons dans la sidebar ("➕ Ajouter 500", "🔄 Nouvelle (1000)", etc.)
+2. **En local:** Utilisez `python load_new_database.py --rows 1000 --reset`
+3. **Avec filtres:** Utilisez les filtres dans le dashboard pour analyser les données
+
+Voir [GUIDE-ANALYSE-NOUVELLE-BD.md](GUIDE-ANALYSE-NOUVELLE-BD.md) pour plus de détails.
+
 ## 📚 Documentation
 
 - [QUICKSTART.md](QUICKSTART.md) - Démarrage rapide
+- [GUIDE-ANALYSE-NOUVELLE-BD.md](GUIDE-ANALYSE-NOUVELLE-BD.md) - Guide pour analyser une nouvelle base de données
+- [AMELIORATIONS-PROJET.md](AMELIORATIONS-PROJET.md) - Améliorations du projet
 - [DEPLOY.md](DEPLOY.md) - Guide de déploiement
 - [GITHUB-DEPLOY.md](GITHUB-DEPLOY.md) - Guide complet GitHub et Streamlit Cloud
 - [README-CLOUD.md](README-CLOUD.md) - Déploiement cloud
