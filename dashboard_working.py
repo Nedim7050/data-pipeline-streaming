@@ -45,9 +45,40 @@ try:
                 st.success(f"✅ {count} transactions disponibles")
             except Exception as e:
                 st.error(f"Erreur: {e}")
+                # Essayer de créer la base de données
+                if st.button("🔄 Créer la base de données"):
+                    try:
+                        with st.spinner("Création de la base de données en cours..."):
+                            from create_database import main as create_db
+                            success = create_db(rows=500, db_path=db_path)
+                            if success:
+                                st.success("✅ Base de données créée!")
+                                st.rerun()
+                            else:
+                                st.error("❌ Échec de la création de la base de données")
+                    except Exception as e2:
+                        st.error(f"Erreur lors de la création: {e2}")
+                        import traceback
+                        with st.expander("Détails de l'erreur"):
+                            st.code(traceback.format_exc(), language="python")
         else:
             st.error("❌ Base non trouvée")
-            st.info("Exécutez: `python create_database.py`")
+            st.info("💡 Cliquez sur le bouton ci-dessous pour créer la base de données")
+            if st.button("🔄 Créer la base de données"):
+                try:
+                    with st.spinner("Création de la base de données en cours..."):
+                        from create_database import main as create_db
+                        success = create_db(rows=500, db_path=db_path)
+                        if success:
+                            st.success("✅ Base de données créée!")
+                            st.rerun()
+                        else:
+                            st.error("❌ Échec de la création de la base de données")
+                except Exception as e:
+                    st.error(f"Erreur lors de la création: {e}")
+                    import traceback
+                    with st.expander("Détails de l'erreur"):
+                        st.code(traceback.format_exc(), language="python")
             st.stop()
     
     # Charger les données
