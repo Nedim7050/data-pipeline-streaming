@@ -12,11 +12,11 @@ Les fichiers inutiles ont été nettoyés. Vérifiez que vous avez seulement:
 
 ### Fichiers de Documentation
 - ✅ README.md
+- ✅ PRESENTATION.md
 - ✅ DEPLOY.md
 - ✅ START-HERE.md
-- ✅ README-CLOUD.md
 - ✅ GUIDE-SIMPLE.md
-- ✅ README-SIMPLE.md
+- ✅ QUICKSTART.md
 - ✅ LICENSE
 
 ### Fichiers de Code
