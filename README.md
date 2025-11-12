@@ -2,6 +2,8 @@
 
 Pipeline de données de bout-en-bout illustrant la génération, l'ingestion, la transformation et la visualisation de transactions financières synthétiques.
 
+> 📖 **Nouveau !** Consultez [PRESENTATION.md](PRESENTATION.md) pour une présentation complète du projet, de ses objectifs et des technologies utilisées.
+
 ## 🚀 Démarrage Rapide
 
 ### Option 1: Version Simplifiée (Sans Docker) - **RECOMMANDÉ**
