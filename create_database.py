@@ -60,13 +60,124 @@ def generate_transaction():
     }
 
 
-def main(rows: Optional[int] = 500, db_path: Optional[Path] = None) -> bool:
+def create_tables(conn: sqlite3.Connection) -> None:
+    """Crée les tables dans la base de données."""
+    cursor = conn.cursor()
+    
+    # Créer les tables
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS raw_transactions (
+            transaction_id TEXT PRIMARY KEY,
+            event_ts TEXT NOT NULL,
+            payload TEXT NOT NULL,
+            ingested_at TEXT NOT NULL
+        )
+    """)
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS transactions_flat (
+            transaction_id TEXT PRIMARY KEY,
+            event_ts TEXT NOT NULL,
+            event_date TEXT NOT NULL,
+            event_hour INTEGER NOT NULL,
+            event_dayofweek TEXT NOT NULL,
+            user_id INTEGER NOT NULL,
+            amount REAL NOT NULL,
+            amount_bucket TEXT NOT NULL,
+            merchant TEXT,
+            category TEXT,
+            city TEXT,
+            status TEXT,
+            payment_method TEXT,
+            currency TEXT,
+            ingested_at TEXT NOT NULL
+        )
+    """)
+    
+    # Créer les index
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_transactions_flat_user_id 
+        ON transactions_flat (user_id)
+    """)
+    
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_transactions_flat_event_ts 
+        ON transactions_flat (event_ts)
+    """)
+    
+    conn.commit()
+
+
+def insert_transaction(cursor: sqlite3.Cursor, record: dict, ingested_at: str) -> bool:
+    """Insère une transaction dans la base de données."""
+    try:
+        # Insertion dans raw_transactions
+        cursor.execute("""
+            INSERT OR IGNORE INTO raw_transactions 
+            (transaction_id, event_ts, payload, ingested_at)
+            VALUES (?, ?, ?, ?)
+        """, (
+            record.get("transaction_id"),
+            record.get("event_ts"),
+            json.dumps(record),
+            ingested_at
+        ))
+        
+        # Transformer pour transactions_flat
+        event_ts = datetime.fromisoformat(record.get("event_ts").replace("Z", "+00:00"))
+        amount = float(record.get("amount", 0))
+        
+        # Déterminer le bucket
+        if amount < 20:
+            amount_bucket = "<20"
+        elif amount < 100:
+            amount_bucket = "20-100"
+        elif amount < 250:
+            amount_bucket = "100-250"
+        elif amount < 500:
+            amount_bucket = "250-500"
+        else:
+            amount_bucket = ">=500"
+        
+        # Insertion dans transactions_flat
+        cursor.execute("""
+            INSERT OR REPLACE INTO transactions_flat (
+                transaction_id, event_ts, event_date, event_hour, event_dayofweek,
+                user_id, amount, amount_bucket, merchant, category, city, status,
+                payment_method, currency, ingested_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            record.get("transaction_id"),
+            record.get("event_ts"),
+            event_ts.date().isoformat(),
+            event_ts.hour,
+            event_ts.strftime("%A"),
+            int(record.get("user_id", 0)),
+            amount,
+            amount_bucket,
+            record.get("merchant", ""),
+            record.get("category", ""),
+            record.get("city", ""),
+            record.get("status", ""),
+            record.get("payment_method", ""),
+            record.get("currency", "EUR"),
+            ingested_at
+        ))
+        return True
+    except Exception as e:
+        print(f"Erreur transaction {record.get('transaction_id')}: {e}")
+        return False
+
+
+def main(rows: Optional[int] = 500, db_path: Optional[Path] = None, append: bool = False) -> bool:
     """
     Crée la base de données SQLite avec des données de test.
     
     Args:
         rows: Nombre de transactions à générer (défaut: 500)
         db_path: Chemin de la base de données (défaut: data/transactions.db)
+        append: Si True, ajoute des transactions à la base existante au lieu de la recréer
     
     Returns:
         True si la création a réussi, False sinon
@@ -82,123 +193,40 @@ def main(rows: Optional[int] = 500, db_path: Optional[Path] = None) -> bool:
         data_dir = db_path.parent
         data_dir.mkdir(parents=True, exist_ok=True)
         
-        # Supprimer la base existante si elle existe
-        if db_path.exists():
+        # Gérer la base existante
+        db_exists = db_path.exists()
+        
+        if db_exists and not append:
+            # Supprimer la base existante
             db_path.unlink()
+            db_exists = False
         
-        # Créer la base de données
+        # Connexion à la base de données
         conn = sqlite3.connect(str(db_path))
+        
+        # Créer les tables si elles n'existent pas
+        if not db_exists:
+            create_tables(conn)
+        
+        # Vérifier que les tables existent
         cursor = conn.cursor()
-        
-        # Créer les tables
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS raw_transactions (
-                transaction_id TEXT PRIMARY KEY,
-                event_ts TEXT NOT NULL,
-                payload TEXT NOT NULL,
-                ingested_at TEXT NOT NULL
-            )
-        """)
-        
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS transactions_flat (
-                transaction_id TEXT PRIMARY KEY,
-                event_ts TEXT NOT NULL,
-                event_date TEXT NOT NULL,
-                event_hour INTEGER NOT NULL,
-                event_dayofweek TEXT NOT NULL,
-                user_id INTEGER NOT NULL,
-                amount REAL NOT NULL,
-                amount_bucket TEXT NOT NULL,
-                merchant TEXT,
-                category TEXT,
-                city TEXT,
-                status TEXT,
-                payment_method TEXT,
-                currency TEXT,
-                ingested_at TEXT NOT NULL
-            )
-        """)
-        
-        # Créer les index
-        cursor.execute("""
-            CREATE INDEX IF NOT EXISTS idx_transactions_flat_user_id 
-            ON transactions_flat (user_id)
-        """)
-        
-        cursor.execute("""
-            CREATE INDEX IF NOT EXISTS idx_transactions_flat_event_ts 
-            ON transactions_flat (event_ts)
-        """)
-        
-        conn.commit()
-        conn.close()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='transactions_flat'")
+        if not cursor.fetchone():
+            # Les tables n'existent pas, les créer
+            create_tables(conn)
         
         # Générer et insérer les données
         ingested_at = datetime.now(timezone.utc).isoformat()
-        conn = sqlite3.connect(str(db_path))
-        cursor = conn.cursor()
-        
         inserted_count = 0
+        
         for i in range(rows):
             try:
                 # Générer une transaction
                 record = generate_transaction()
                 
-                # Insertion dans raw_transactions
-                cursor.execute("""
-                    INSERT OR IGNORE INTO raw_transactions 
-                    (transaction_id, event_ts, payload, ingested_at)
-                    VALUES (?, ?, ?, ?)
-                """, (
-                    record.get("transaction_id"),
-                    record.get("event_ts"),
-                    json.dumps(record),
-                    ingested_at
-                ))
-                
-                # Transformer pour transactions_flat
-                event_ts = datetime.fromisoformat(record.get("event_ts").replace("Z", "+00:00"))
-                amount = float(record.get("amount", 0))
-                
-                # Déterminer le bucket
-                if amount < 20:
-                    amount_bucket = "<20"
-                elif amount < 100:
-                    amount_bucket = "20-100"
-                elif amount < 250:
-                    amount_bucket = "100-250"
-                elif amount < 500:
-                    amount_bucket = "250-500"
-                else:
-                    amount_bucket = ">=500"
-                
-                # Insertion dans transactions_flat
-                cursor.execute("""
-                    INSERT OR REPLACE INTO transactions_flat (
-                        transaction_id, event_ts, event_date, event_hour, event_dayofweek,
-                        user_id, amount, amount_bucket, merchant, category, city, status,
-                        payment_method, currency, ingested_at
-                    )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    record.get("transaction_id"),
-                    record.get("event_ts"),
-                    event_ts.date().isoformat(),
-                    event_ts.hour,
-                    event_ts.strftime("%A"),
-                    int(record.get("user_id", 0)),
-                    amount,
-                    amount_bucket,
-                    record.get("merchant", ""),
-                    record.get("category", ""),
-                    record.get("city", ""),
-                    record.get("status", ""),
-                    record.get("payment_method", ""),
-                    record.get("currency", "EUR"),
-                    ingested_at
-                ))
-                inserted_count += 1
+                # Insérer la transaction
+                if insert_transaction(cursor, record, ingested_at):
+                    inserted_count += 1
             except Exception as e:
                 print(f"Erreur transaction {i}: {e}")
                 continue
@@ -214,7 +242,7 @@ def main(rows: Optional[int] = 500, db_path: Optional[Path] = None) -> bool:
         conn.close()
         
         if count > 0:
-            print(f"SUCCESS: Base de données créée avec succès! {count} transactions insérées.")
+            print(f"SUCCESS: Base de données créée avec succès! {count} transactions au total.")
             return True
         else:
             print("ERREUR: Base vide!")
@@ -236,12 +264,24 @@ if __name__ == "__main__":
     print("Creation de la base de donnees SQLite")
     print("=" * 60)
     
-    success = main(rows=500, db_path=db_path)
+    # Parser les arguments
+    import argparse
+    parser = argparse.ArgumentParser(description="Créer une base de données SQLite")
+    parser.add_argument("--rows", type=int, default=500, help="Nombre de transactions à générer")
+    parser.add_argument("--db", type=str, default=None, help="Chemin de la base de données")
+    parser.add_argument("--append", action="store_true", help="Ajouter des transactions à la base existante")
+    
+    args = parser.parse_args()
+    
+    if args.db:
+        db_path = Path(args.db)
+    
+    success = main(rows=args.rows, db_path=db_path, append=args.append)
     
     if success:
         print(f"Base: {db_path}")
         print("Pour lancer Streamlit:")
-        print("   streamlit run dashboard_working.py")
+        print("   streamlit run streamlit_app.py")
     else:
         print("Échec de la création de la base de données")
         sys.exit(1)
