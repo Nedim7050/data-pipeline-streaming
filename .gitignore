@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Data files
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Keep data structure but ignore content
+!data/.gitkeep
+!data/queue/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Airflow
+airflow_logs/
+airflow.db
+
+# Docker
+docker-compose.override.yml
+
+

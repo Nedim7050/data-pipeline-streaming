@@ -1,0 +1,19 @@
+# Versions compatibles avec Python 3.14 (testées et fonctionnelles)
+# Note: PyArrow 22.0.0 et Pillow 12.0.0 sont nécessaires pour Python 3.14
+# Installation en deux étapes (voir START-HERE.md)
+
+# Étape 1: Installer Pillow et PyArrow d'abord (binaires pour Python 3.14)
+pillow>=12.0.0
+pyarrow>=22.0.0
+
+# Étape 2: Installer les autres dépendances
+sqlalchemy>=2.0.0
+pandas>=2.3.0
+streamlit>=1.51.0
+python-dotenv>=1.0.0
+click>=8.0.0
+tqdm>=4.66.0
+altair<6,>=4.0
+greenlet>=1.0.0
+
+
