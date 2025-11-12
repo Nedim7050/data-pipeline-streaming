@@ -88,6 +88,6 @@ if (Test-Path "data/queue/transactions.jsonl") {
 ## 📚 Documentation
 
 - **[START-HERE.md](START-HERE.md)** - Guide de démarrage complet
-- **[README-SIMPLE.md](README-SIMPLE.md)** - Documentation version simplifiée
-- **[README-CLOUD.md](README-CLOUD.md)** - Guide déploiement cloud
+- **[QUICKSTART.md](QUICKSTART.md)** - Démarrage rapide
+- **[DEPLOY.md](DEPLOY.md)** - Guide de déploiement
 

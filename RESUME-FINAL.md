@@ -12,12 +12,11 @@
 
 ### Fichiers Conservés
 - ✅ README.md (principal, propre)
+- ✅ PRESENTATION.md (présentation complète)
 - ✅ DEPLOY.md (guide de déploiement)
 - ✅ GITHUB-DEPLOY.md (guide complet)
 - ✅ QUICKSTART.md (démarrage rapide)
 - ✅ GUIDE-SIMPLE.md (guide simple)
-- ✅ README-CLOUD.md (déploiement cloud)
-- ✅ README-SIMPLE.md (version simplifiée)
 - ✅ START-HERE.md (guide de démarrage)
 - ✅ LICENSE
 - ✅ Tous les fichiers de code source (producer/, consumers/, analytics/, etc.)

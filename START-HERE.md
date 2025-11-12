@@ -183,15 +183,15 @@ data/
 
 ## 📚 Ressources
 
-- [README-SIMPLE.md](README-SIMPLE.md) - Documentation complète de la version simplifiée
-- [README-CLOUD.md](README-CLOUD.md) - Guide de déploiement cloud
+- [QUICKSTART.md](QUICKSTART.md) - Démarrage rapide
+- [DEPLOY.md](DEPLOY.md) - Guide de déploiement
 - [README.md](README.md) - Documentation complète du projet
 
 ## 🎉 Prochaines Étapes
 
 1. ✅ Tester la version simplifiée localement
 2. 🔄 Explorer le dashboard Streamlit
-3. ☁️ Déployer sur Streamlit Cloud (voir [README-CLOUD.md](README-CLOUD.md))
+3. ☁️ Déployer sur Streamlit Cloud (voir [DEPLOY.md](DEPLOY.md))
 4. 🚀 Passer à la version complète avec Docker (voir [README.md](README.md))
 
 ## 💡 Conseils
